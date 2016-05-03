@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">雙擊鎖頻</string>
+
+    <string name="main_open_service">開啟服務</string>
+    <string name="main_dialog_title">若重新開機,請重新開啟服務</string>
+    <string name="main_dialog_ok">確認</string>
+</resources>
