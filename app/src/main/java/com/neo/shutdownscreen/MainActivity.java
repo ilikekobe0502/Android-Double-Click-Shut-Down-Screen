@@ -15,6 +15,8 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.splunk.mint.Mint;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mint.initAndStartSession(MainActivity.this, "0b90fb73");
         setContentView(R.layout.activity_main);
         mSwitch_Service = (Switch) findViewById(R.id.switch_service_on);
 
