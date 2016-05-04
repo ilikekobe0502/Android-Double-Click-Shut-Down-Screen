@@ -157,6 +157,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 return true;
+            case R.id.action_rate:
+                Utility.RateMyApp(MainActivity.this);
+                return true;
         }
 
         return false;

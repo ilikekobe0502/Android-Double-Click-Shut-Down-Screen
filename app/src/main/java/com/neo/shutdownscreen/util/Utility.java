@@ -1,7 +1,10 @@
 package com.neo.shutdownscreen.util;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 
 import com.neo.shutdownscreen.R;
@@ -40,5 +43,24 @@ public class Utility {
         } catch (PackageManager.NameNotFoundException e) {
         }
         return data;
+    }
+
+    /**
+     * 導到自己google store 的網址
+     */
+    public static void RateMyApp(Context context){
+
+        // 建立一個Intent - 在這個Intent 上使用 Google Play Store 的連結
+        // E.G. market://details?id=
+        // 之後用 getPackageName 這個功能來取後這個程式的 Namespace.
+        Intent goToMarket = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + context.getPackageName()));
+
+        try {
+            // 之後開始一個新的Activity 去這個Intent
+            context.startActivity(goToMarket);
+        } catch (ActivityNotFoundException e) {
+            // 如果有錯誤的話 使用正常的網址來連接到 Google Play Store的網頁
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + context.getPackageName())));
+        }
     }
 }

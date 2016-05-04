@@ -3,7 +3,7 @@
 
     <!--toolbar-->
     <string name="toolbar_setting">設定</string>
-    <string name="toolbar_donate">捐贈</string>
+    <string name="toolbar_rate">評分</string>
 
     <!--MainActivity-->
     <string name="main_open_service">開啟服務</string>
