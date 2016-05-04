@@ -1,4 +1,4 @@
-package com.neo.shutdownscreen;
+package com.neo.shutdownscreen.service;
 
 import android.app.ActivityManager;
 import android.app.Service;
@@ -19,6 +19,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+
+import com.neo.shutdownscreen.util.DeviceAdminSampleReceiver;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -1,20 +1,28 @@
-package com.neo.shutdownscreen;
+package com.neo.shutdownscreen.view;
 
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.neo.shutdownscreen.R;
+import com.neo.shutdownscreen.service.MyService;
+import com.neo.shutdownscreen.util.DeviceAdminSampleReceiver;
+import com.neo.shutdownscreen.util.PublicDialog;
+import com.neo.shutdownscreen.util.Utility;
 import com.splunk.mint.Mint;
 
 
@@ -35,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Mint.initAndStartSession(MainActivity.this, "0b90fb73");
         setContentView(R.layout.activity_main);
+        //固定畫面直立
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        ActionBar actionBar = this.getSupportActionBar();
+
         mSwitch_Service = (Switch) findViewById(R.id.switch_service_on);
 
         // Enable admin
@@ -71,17 +83,17 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "");
                         startActivity(intent);
                     } else {
-                        startService(service);
-                        Log.i(TAG, "Service is start");
+                        //判斷Service 有無開啟
+                        if (!isMyServiceRunning(MyService.class)) {
+                            startService(service);
+                            Log.i(TAG, "Service is start");
+                            PublicDialog.showConfirmDialog(MainActivity.this, getString(R.string.main_dialog_title), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
 
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setTitle(R.string.main_dialog_title)
-                                .setPositiveButton(R.string.main_dialog_ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                }).show();
+                                }
+                            });
+                        }
                     }
                 } else {
                     stopService(service);
@@ -109,6 +121,44 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         }
+        return false;
+    }
+
+    /**
+     * 宣告 action bar
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    /**
+     * action bar 事件
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                StringBuilder message = new StringBuilder();
+                message.append(getString(R.string.dialog_device_version )).append(Utility.getSDKVersion()).append("\n").
+                        append(getString(R.string.dialog_app_version)).append(" ").
+                        append(Utility.getAPPVersion(getApplicationContext()));
+                PublicDialog.showConfirmDialog(MainActivity.this, message.toString(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                return true;
+        }
+
         return false;
     }
 }

@@ -1,4 +1,4 @@
-package com.neo.shutdownscreen;
+package com.neo.shutdownscreen.util;
 
 import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
