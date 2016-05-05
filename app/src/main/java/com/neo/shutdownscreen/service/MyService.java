@@ -1,8 +1,11 @@
 package com.neo.shutdownscreen.service;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.app.admin.DevicePolicyManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,11 +13,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,6 +28,8 @@ import com.neo.shutdownscreen.util.DeviceAdminSampleReceiver;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Created by neo on 2016/5/2.
@@ -36,8 +41,6 @@ public class MyService extends Service implements View.OnTouchListener {
     private WindowManager mWindowManager;
     // linear layout will use to detect touch event
     private LinearLayout touchLayout;
-
-    private int count = 0;
 
     private DevicePolicyManager mManager;
     private ComponentName mComponent;
@@ -87,13 +90,35 @@ public class MyService extends Service implements View.OnTouchListener {
      *
      * @return
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public boolean isHome() {
         ActivityManager mActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        String mPackageName = "";
         // android系統是支持多任務的，下面的意思就是：找到所有正在運行的任務，
-        List<ActivityManager.RunningTaskInfo> rti = mActivityManager.getRunningTasks(1);
         /* * 找到正在運行的任務後，還得找出前台運行的任務，最前面的就是前台正在運行的任務 * RunningTaskInfo info = runningTask Infos.get(0); */
         // 如果當前獲取的桌面應用程序的Package名裡面，包含有當前正在前台運行的桌面應用的包名，則表示桌面顯示
-        return getHomes().contains(rti.get(0).topActivity.getPackageName());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//Android 6.0以上
+            UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
+            long endTime = System.currentTimeMillis();
+            long beginTime = endTime - 1000 * 60;
+            // We get usage stats for the last minute
+            List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, beginTime, endTime);
+            // Sort the stats by the last time used
+            if (stats != null) {
+                SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
+                for (UsageStats usageStats : stats) {
+                    mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+                }
+                if (mySortedMap != null && !mySortedMap.isEmpty()) {
+                    mPackageName = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+                }
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {//Android 5.0以上
+            mPackageName = mActivityManager.getRunningAppProcesses().get(0).processName;
+        } else {//Android5.0以下
+            mPackageName = mActivityManager.getRunningTasks(1).get(0).topActivity.getPackageName();
+        }
+        return getHomes().contains(mPackageName);
     }
 
     /**
@@ -112,6 +137,7 @@ public class MyService extends Service implements View.OnTouchListener {
         for (ResolveInfo ri : resolveInfo) {
             names.add(ri.activityInfo.packageName);
         }
+        Log.d(TAG, names + " 999");
         return names;
     }
 
@@ -202,13 +228,5 @@ public class MyService extends Service implements View.OnTouchListener {
 //        if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_UP)
 //            Log.i(TAG, "Action :" + event.getAction() + "\t X :" + event.getRawX() + "\t Y :" + event.getRawY());
         return true;
-    }
-
-    public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-
-            return true;
-        }
-        return false;
     }
 }

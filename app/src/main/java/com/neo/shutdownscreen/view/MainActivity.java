@@ -9,12 +9,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
@@ -30,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final String TAG = this.getClass().getSimpleName();
 
-    private Switch mSwitch_Service;
+    private Switch mSwitchService;
+    private Button mButtonAccess;
 
     private DevicePolicyManager mManager;
     private ComponentName mComponent;
 
     private Intent service;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ActionBar actionBar = this.getSupportActionBar();
 
-        mSwitch_Service = (Switch) findViewById(R.id.switch_service_on);
+        mSwitchService = (Switch) findViewById(R.id.switch_service_on);
+        mButtonAccess = (Button)findViewById(R.id.button_open_access);
 
         // Enable admin
         mManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -63,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (isMyServiceRunning(MyService.class) && mManager.isAdminActive(mComponent))
-            mSwitch_Service.setChecked(true);
+            mSwitchService.setChecked(true);
         else
-            mSwitch_Service.setChecked(false);
+            mSwitchService.setChecked(false);
 
     }
 
@@ -73,7 +77,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mSwitch_Service.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mButtonAccess.setVisibility(View.VISIBLE);
+        }
+        mButtonAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent usageAccessIntent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                usageAccessIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(usageAccessIntent);
+            }
+        });
+
+        mSwitchService.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {

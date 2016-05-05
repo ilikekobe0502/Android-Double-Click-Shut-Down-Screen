@@ -8,6 +8,7 @@
     <!--MainActivity-->
     <string name="main_open_service">開啟服務</string>
     <string name="main_dialog_title">若重新開機,請重新開啟服務</string>
+    <string name="main_button_access">請先將權限開啟</string>
 
     <!--Dialog-->
     <string name="dialog_ok">確認</string>
