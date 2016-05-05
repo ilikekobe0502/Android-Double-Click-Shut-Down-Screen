@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">要關掉就點兩下</string>
+    <string name="app_name">要鎖屏就點兩下</string>
 
     <!--toolbar-->
     <string name="toolbar_setting">設定</string>
