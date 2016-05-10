@@ -33,13 +33,9 @@ public class Utility {
     public static StringBuilder getAPPVersion(Context context) {
         StringBuilder data = new StringBuilder();
         String versionName;
-        int versionCode;
         try {
             versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-            versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-
-            data.append(context.getString(R.string.dialog_app_version_name)).append(versionName).append(" ").
-                    append(context.getString(R.string.dialog_app_version_code)).append(versionCode);
+            data.append(context.getString(R.string.dialog_app_version)).append(versionName);
         } catch (PackageManager.NameNotFoundException e) {
         }
         return data;

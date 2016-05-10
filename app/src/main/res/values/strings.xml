@@ -9,12 +9,14 @@
     <string name="main_open_service">開啟服務</string>
     <string name="main_dialog_title">若重新開機,請重新開啟服務</string>
     <string name="main_button_access">請先將權限開啟</string>
+    <string name="main_version">版本</string>
 
     <!--Dialog-->
     <string name="dialog_ok">確認</string>
     <string name="dialog_device_version">You Device version :</string>
-    <string name="dialog_app_version">APP Version</string>
-    <string name="dialog_app_version_name">Name :</string>
-    <string name="dialog_app_version_code">Code :</string>
+    <string name="dialog_app_version">APP Version Name :</string>
+
+    <!--Toast-->
+    <string name="toast_no_activity_exception">不好意思，您的裝置尚不支援，請待更新。</string>
 
 </resources>

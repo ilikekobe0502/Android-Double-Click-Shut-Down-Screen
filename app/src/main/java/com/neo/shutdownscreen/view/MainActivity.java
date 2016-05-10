@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.neo.shutdownscreen.R;
 import com.neo.shutdownscreen.service.MyService;
@@ -29,12 +31,14 @@ import com.neo.shutdownscreen.util.Utility;
 import com.splunk.mint.Mint;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private Switch mSwitchService;
     private Button mButtonAccess;
+    private Button mButtonRate;
+    private TextView mTextViewVersion;
 
     private DevicePolicyManager mManager;
     private ComponentName mComponent;
@@ -51,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = this.getSupportActionBar();
 
         mSwitchService = (Switch) findViewById(R.id.switch_service_on);
-        mButtonAccess = (Button)findViewById(R.id.button_open_access);
+        mButtonAccess = (Button) findViewById(R.id.button_open_access);
+        mButtonRate = (Button) findViewById(R.id.button_rate);
+        mTextViewVersion = (TextView) findViewById(R.id.textView_version);
+        mButtonRate.setOnClickListener(this);
 
         // Enable admin
         mManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -77,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mButtonAccess.setVisibility(View.VISIBLE);
         }
         mButtonAccess.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +92,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent usageAccessIntent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
                 usageAccessIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(usageAccessIntent);
+                if (usageAccessIntent.resolveActivity(getPackageManager()) != null)
+                    startActivity(usageAccessIntent);
+                else {
+                    Toast.makeText(MainActivity.this, getString(R.string.toast_no_activity_exception), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -117,6 +128,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        StringBuilder message = new StringBuilder();
+        message.append(getString(R.string.dialog_device_version)).append(Utility.getSDKVersion()).append("\n").
+                append(Utility.getAPPVersion(getApplicationContext()));
+        mTextViewVersion.setText(message);
     }
 
     @Override
@@ -163,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 StringBuilder message = new StringBuilder();
-                message.append(getString(R.string.dialog_device_version )).append(Utility.getSDKVersion()).append("\n").
+                message.append(getString(R.string.dialog_device_version)).append(Utility.getSDKVersion()).append("\n").
                         append(getString(R.string.dialog_app_version)).append(" ").
                         append(Utility.getAPPVersion(getApplicationContext()));
                 PublicDialog.showConfirmDialog(MainActivity.this, message.toString(), new DialogInterface.OnClickListener() {
@@ -179,5 +195,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_rate:
+                Utility.RateMyApp(MainActivity.this);
+                break;
+        }
     }
 }
