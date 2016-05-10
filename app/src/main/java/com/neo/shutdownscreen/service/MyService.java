@@ -118,6 +118,8 @@ public class MyService extends Service implements View.OnTouchListener {
         } else {//Android5.0以下
             mPackageName = mActivityManager.getRunningTasks(1).get(0).topActivity.getPackageName();
         }
+
+        Log.d(TAG,"Top Activity :" + mPackageName);
         return getHomes().contains(mPackageName);
     }
 
@@ -137,7 +139,7 @@ public class MyService extends Service implements View.OnTouchListener {
         for (ResolveInfo ri : resolveInfo) {
             names.add(ri.activityInfo.packageName);
         }
-        Log.d(TAG, names + " 999");
+        Log.d(TAG, "Home Package " + names);
         return names;
     }
 
