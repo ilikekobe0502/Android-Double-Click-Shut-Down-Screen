@@ -7,13 +7,24 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 
+import com.neo.shutdownscreen.BuildConfig;
 import com.neo.shutdownscreen.R;
+import com.splunk.mint.Mint;
 
 /**
  * Created by neo on 2016/5/4.
  */
 public class Utility {
     private final static int TAG_SDK_VERSION = Build.VERSION.SDK_INT;
+
+    /**
+     * 設置MINT
+     * @param context
+     */
+    public static void setMINT(Context context) {
+        if (!BuildConfig.DEBUG)
+            Mint.initAndStartSession(context, "0b90fb73");
+    }
 
     /**
      * 取得裝置的SDK版本
@@ -44,7 +55,7 @@ public class Utility {
     /**
      * 導到自己google store 的網址
      */
-    public static void RateMyApp(Context context){
+    public static void RateMyApp(Context context) {
 
         // 建立一個Intent - 在這個Intent 上使用 Google Play Store 的連結
         // E.G. market://details?id=

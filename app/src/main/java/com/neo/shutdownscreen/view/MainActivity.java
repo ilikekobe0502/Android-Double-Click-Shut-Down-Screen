@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Mint.initAndStartSession(MainActivity.this, "0b90fb73");
+        Utility.setMINT(MainActivity.this);
         setContentView(R.layout.activity_main);
         //固定畫面直立
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
